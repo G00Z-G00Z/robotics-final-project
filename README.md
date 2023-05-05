@@ -45,3 +45,14 @@ Make a simulation of a UR5 in CoppeliaSim, using python and ZeroMQ Remote API.
 | 1   | 20° | 30°  | 15° | 5°  | 45° |                            |                         |
 | 2   | 0°  | −90° | 90° | 0°  | 90° |                            |                         |
 | 3   | 0°  | 10°  | 20° | 30° | 40° |                            |                         |
+
+# Developers
+
+## Venv
+
+```bash
+python -m venv final-exam-venv
+source ./final-exam-venv/bin/activate
+pip install -r requirements.txt
+```
+
