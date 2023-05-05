@@ -131,3 +131,6 @@ dmypy.json
 # Ignore school folder
 school/*
 !school/.gitkeep
+
+final-exam-venv/*
+!final-exam-venv/.gitkeep
