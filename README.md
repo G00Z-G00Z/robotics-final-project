@@ -48,6 +48,10 @@ Make a simulation of a UR5 in CoppeliaSim, using python and ZeroMQ Remote API.
 
 # Developers
 
+## Jupyter lab
+
+To run jupyter lab, run the command: `./jupyter.sh`
+
 ## Venv
 
 ```bash
