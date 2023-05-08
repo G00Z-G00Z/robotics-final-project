@@ -46,6 +46,73 @@ Make a simulation of a UR5 in CoppeliaSim, using python and ZeroMQ Remote API.
 | 2   | 0°  | −90° | 90° | 0°  | 90° |                            |                         |
 | 3   | 0°  | 10°  | 20° | 30° | 40° |                            |                         |
 
+# UR5 Specifications
+
+## Denavit-Hartenberg parameters
+
+You can find the kinematics specifications [here][link_ur5_specifications].
+
+[Video sobre el tema](https://www.youtube.com/watch?v=z9yJu5ndQ48)
+
+$$
+H_i^{i-1} = Rot_z(\theta_i) \rarr T(0,0,d_i) \rarr T(a_i, 0, 0) \rarr Rotx(\alpha_i)
+$$
+
+> Multiplicando estas transformaciones, podemos obtener la matriz de transformacion
+
+Se pueden obtener la *matriz homogenea* para cada *joint* si se aplican las transformaciones enlistadas anteriormente:
+
+$$
+H_i^{i-1} = 
+
+\begin{bmatrix}
+R(\theta_i) & 0 \\
+0 & 1
+\end{bmatrix}
+
+\begin{bmatrix}
+0 & d_z \\
+0 & 1
+\end{bmatrix}
+
+\begin{bmatrix}
+0 & a_x \\
+0 & 1
+\end{bmatrix}
+
+\begin{bmatrix}
+R(\alpha_i) & 0 \\
+0 & 1
+\end{bmatrix}
+$$
+
+Para obtener la matriz de transformacion final, se puede hacer lo siguiente: 
+
+$$
+T_f = \prod^n_{i=1}H_i
+$$
+
+*Table of Kinematics*
+
+| Kinematics | $\theta$ [rad] | a [m]   | d [m]  | $\alpha$ [rad] |
+| ---------- | ----------  | ----    | ----   | ----------  |
+| Joint 1    | 0           | 0       | 0.1625 | 1.570       |
+| Joint 2    | 0           | -0.425  | 0      | 0           |
+| Joint 3    | 0           | -0.3922 | 0      | 0           |
+| Joint 4    | 0           | 0       | 0.1333 | 1.570       |
+| Joint 5    | 0           | 0       | 0.0997 | -1.570      |
+| Joint 6    | 0           | 0       | 0.0996 | 0           |
+
+| Kinematics | theta [rad] | a [m]   | d [m]  | alpha [rad] |
+| ---------- | ----------  | ----    | ----   | ----------  |
+| Joint 1    | 0           | 0       | 0.1625 | 1.570       |
+| Joint 2    | 0           | -0.425  | 0      | 0           |
+| Joint 3    | 0           | -0.3922 | 0      | 0           |
+| Joint 4    | 0           | 0       | 0.1333 | 1.570       |
+| Joint 5    | 0           | 0       | 0.0997 | -1.570      |
+| Joint 6    | 0           | 0       | 0.0996 | 0           |
+
+
 # Developers
 
 ## Jupyter lab
@@ -60,3 +127,4 @@ source ./final-exam-venv/bin/activate
 pip install -r requirements.txt
 ```
 
+[link_ur5_specifications]:https://www.universal-robots.com/articles/ur/application-installation/dh-parameters-for-calculations-of-kinematics-and-dynamics/
