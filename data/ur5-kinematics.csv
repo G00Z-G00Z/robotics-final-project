@@ -1,7 +1,7 @@
-Kinematics , theta_[rad] , a_[m]   , d_[m]  , alpha_[rad]
-Joint_1    , 0           , 0       , 0.1625 , 1.570
-Joint_2    , 0           , -0.425  , 0      , 0
-Joint_3    , 0           , -0.3922 , 0      , 0
-Joint_4    , 0           , 0       , 0.1333 , 1.570
-Joint_5    , 0           , 0       , 0.0997 , -1.570
-Joint_6    , 0           , 0       , 0.0996 , 0
+Kinematics,theta_[rad],a_[m],d_[m],alpha_[rad]
+Joint_1,0,0,0.1625,1.570
+Joint_2,0,-0.425,0,0
+Joint_3,0,-0.3922,0,0
+Joint_4,0,0,0.1333,1.570
+Joint_5,0,0,0.0997,-1.570
+Joint_6,0,0,0.0996,0
