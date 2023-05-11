@@ -52,6 +52,8 @@ Make a simulation of a UR5 in CoppeliaSim, using python and ZeroMQ Remote API.
 
 You can find the kinematics specifications [here][link_ur5_specifications].
 
+> 🔥Each joint has it's own 'xyz' and it rotates around it's local 'z' axis
+
 [Video sobre el tema](https://www.youtube.com/watch?v=z9yJu5ndQ48)
 
 $$
