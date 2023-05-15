@@ -1,5 +1,8 @@
 # Robotics homework
 
+> [Video ejemplo de UR5 en coppelia:](https://drive.google.com/file/d/1G5fTVPzZRJTcCR_4HjN8MtQ2bTT_Kc2t/view?usp=sharing)
+> [Video de copelia con denavit](https://www.youtube.com/watch?v=17Dr-NqJSiY)
+
 # Introduction
 
 Make a simulation of a UR5 in CoppeliaSim, using python and ZeroMQ Remote API. 
@@ -53,6 +56,7 @@ Make a simulation of a UR5 in CoppeliaSim, using python and ZeroMQ Remote API.
 You can find the kinematics specifications [here][link_ur5_specifications].
 
 > 🔥Each joint has it's own 'xyz' and it rotates around it's local 'z' axis
+> 🔥Modules > Kinematics > Denavit-Hartenberg extractor
 
 [Video sobre el tema](https://www.youtube.com/watch?v=z9yJu5ndQ48)
 
