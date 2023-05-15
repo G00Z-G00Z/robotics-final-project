@@ -12,11 +12,14 @@ from functools import wraps
 
 df_generated = pd.read_csv("../denavit-generated.csv")
 df_online = pd.read_csv("../data/ur5-kinematics.csv")
+df_online["theta_[deg]"] = df_online["theta_[rad]"].apply(np.rad2deg)
+df_online["alpha_[deg]"] = df_online["alpha_[rad]"].apply(np.rad2deg)
+df_online.drop(columns=["theta_[rad]", "alpha_[rad]"], inplace=True)
 
-print("Generated")
-print(df_generated)
-print("Online")
-print(df_online)
+print("Generated DH parameters")
+print(df_generated, end="\n\n")
+print("Online DH parameters from universal robots website")
+print(df_online, end="\n\n")
 
 
 def print_rounded(m):
@@ -84,8 +87,10 @@ def mul_homogenous_matrixes(transform_matrices: list[np.ndarray]) -> np.ndarray:
     """
     return reduce(lambda prev, next: next @ prev, transform_matrices[::-1])
 
+
 NO_ROTATION_MATRIX, _ = rotation_3d_deg(0, 0, 0)
 NO_TRANSLATION_VEC = np.array([0, 0, 0])
+
 
 def get_homogenous_mat_for_joint(theta: float, alpha: float, a: float, d: float):
     """
@@ -122,8 +127,8 @@ H_mats_generated = get_transformation_matrices(
     df_generated["theta"], df_generated["alpha"], df_generated["a"], df_generated["d"]
 )
 H_mats_online = get_transformation_matrices(
-    df_online["theta_[rad]"],
-    df_online["alpha_[rad]"],
+    df_online["theta_[deg]"],
+    df_online["alpha_[deg]"],
     df_online["a_[m]"],
     df_online["d_[m]"],
 )
@@ -160,35 +165,41 @@ def reset_arm():
         sim.setJointTargetPosition(j, np.deg2rad(0))
 
 
+real_final_coords: np.ndarray = np.array([])
+
+
 try:
     sim.startSimulation()
     reset_arm()
-
-    print(sim.getObjectPosition(connection_id, sim.handle_world))
-    angles = [0 for _ in range(6)]
-    # angles[1] = 90
-    angles = [np.deg2rad(a) for a in angles]
-    assert len(angles) == no_joints
-
-    for a, j in zip(angles, joint_id):
-        sim.setJointTargetPosition(j, a)
-
     sleep(1)
-
-    for idx, j in enumerate(joint_id):
-        coord = sim.getObjectPosition(j, sim.handle_world)
-        print(f"j{idx}: {np.round(coord,4)}")
-
-    coord = sim.getObjectPosition(connection_id, sim.handle_world)
-    print(f"cn: {np.round(coord,4)}")
-
-    print("Final coordinate in simulation")
-    print_rounded(coord)
-    print("Final coordinate according to method")
-    print_rounded(H_total[0:3, 3])
-
+    real_final_coords = sim.getObjectPosition(joint_id[-1], sim.handle_world)
 except Exception as e:
     sim.stopSimulation()
     raise e
 finally:
     sim.stopSimulation()
+
+
+online_final_coords = mul_homogenous_matrixes(H_mats_online) @ np.array([0, 0, 0, 1])
+generated_final_coords = mul_homogenous_matrixes(H_mats_generated) @ np.array(
+    [0, 0, 0, 1]
+)
+
+print(r"Assuming theta is 0 deg")
+
+print("Real final coords from simulation at the last joint: ", np.round(real_final_coords, 4))
+print("Online final coords: ", np.round(online_final_coords[0:3], 4))
+print("Generated final coords: ", np.round(generated_final_coords[0:3], 4))
+print(end="\n\n")
+print(
+    "Difference between online and generated: ",
+    np.round(online_final_coords[0:3] - generated_final_coords[0:3], 4),
+)
+print(
+    "Absoulute error between real and online: ",
+    np.round(np.abs(real_final_coords - online_final_coords[0:3]), 4),
+)
+print(
+    "Absoulute error between real and generated: ",
+    np.round(np.abs(real_final_coords - generated_final_coords[0:3]), 4),
+)
