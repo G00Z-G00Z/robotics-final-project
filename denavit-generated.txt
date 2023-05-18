@@ -1,5 +1,0 @@
-  - between joint '/joint{0}' and joint '/joint{1}': d=0.0661 [m], theta=90.0 [deg], r=0.0000 [m], alpha=-90.0 [deg]
-    - between joint '/joint{1}' and joint '/joint{2}': d=0.0000 [m], theta=-0.0 [deg], r=0.4251 [m], alpha=0.0 [deg]
-    - between joint '/joint{2}' and joint '/joint{3}': d=0.0000 [m], theta=0.0 [deg], r=0.3922 [m], alpha=0.0 [deg]
-    - between joint '/joint{3}' and joint '/joint{4}': d=0.0397 [m], theta=-90.0 [deg], r=0.0000 [m], alpha=-90.0 [deg]
-    - between joint '/joint{4}' and joint '/joint{5}': d=0.0492 [m], theta=90.0 [deg], r=0.0000 [m], alpha=-90.0 [deg]
