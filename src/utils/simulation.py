@@ -1,13 +1,29 @@
 from typing import Any
 import numpy as np
 from .matrices import *
-import zmqRemoteApi
+import contextlib
+from time import sleep
+
 
 NO_ROTATION_MATRIX, _ = rotation_3d_deg(0, 0, 0)
 NO_TRANSLATION_VEC = np.array([0, 0, 0])
 
 """Type alias for Any"""
 Simulation = Any
+
+
+@contextlib.contextmanager
+def start_simulation(sim: Simulation):
+    """
+    Context manager for starting and stopping a simulation
+    """
+
+    try:
+        sim.startSimulation()
+        yield sim
+    finally:
+        sim.stopSimulation()
+        sleep(1)
 
 
 def reset_arm(sim: Simulation, list_joint_ids: list[int], angle_deg: int = 0):
