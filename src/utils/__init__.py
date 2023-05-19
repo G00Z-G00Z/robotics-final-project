@@ -11,4 +11,5 @@ from .simulation import (
     get_homogenous_mat_for_joint,
     NO_ROTATION_MATRIX,
     NO_TRANSLATION_VEC,
+    start_simulation,
 )
