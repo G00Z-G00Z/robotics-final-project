@@ -1,4 +1,4 @@
-from .utils import print_rounded_np
+from .utils import print_rounded_np, window_iter
 from .matrices import (
     rotation_3d_deg,
     add_translation_to_rotation_3d,
