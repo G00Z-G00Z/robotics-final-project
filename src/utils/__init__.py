@@ -14,4 +14,7 @@ from .simulation import (
     start_simulation,
     get_transformation_matrix_between_joins,
     get_transformation_matrices_for_joint_list,
+    Joint,
+    Link,
+    RobotArm,
 )
