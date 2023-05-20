@@ -97,6 +97,59 @@ class Link:
             self._sim, self.prev_joint.id, self.next_joint.id
         )
 
+
+class RobotArm:
+    _links: list[Link]
+
+    def __init__(self, links: list[Link]):
+        self._links = links
+
+    def reset_arm(self):
+        for link in self._links:
+            link.prev_joint.reset()
+            link.next_joint.reset()
+
+    def get_predicted_position(
+        self, angles_deg: list[float], initial_pos: np.ndarray = np.array([0, 0, 0])
+    ) -> np.ndarray:
+        """
+        Returns the predicted position of the end effector
+        It applies a z rotation on each joint, and then applies the initial transformation matrix to each link
+        """
+        assert len(angles_deg) == len(
+            self._links
+        ), "You must provide one angle per link"
+        angles: list[float] = [np.deg2rad(angle) for angle in angles_deg]
+
+        H_mats: list[np.ndarray] = []
+
+        for link, angle in zip(self._links, angles):
+            rotation_angle_m, _ = rotation_3d_deg(yau_z=angle)
+            rotation_h_matrix = add_translation_to_rotation_3d(
+                rotation_angle_m, NO_TRANSLATION_VEC
+            )
+            H_mats.append(rotation_h_matrix @ link.initial_homogeneous_matrix)
+
+        predicted_position = np.block([initial_pos, 1])
+        H_total = mul_homogenous_matrixes(H_mats)
+
+        return H_total @ predicted_position
+
+    def set_position_arm(self, angles_deg: list[float]):
+        """
+        Sets the arm position to the angles provided
+        """
+        assert len(angles_deg) == len(
+            self._links
+        ), "You must provide one angle per link"
+        angles: list[float] = [np.deg2rad(angle) for angle in angles_deg]
+
+        for link, angle in zip(self._links, angles):
+            link.prev_joint.angle = angle
+
+        return self._links[-1].next_joint.position
+
+
 @contextlib.contextmanager
 def start_simulation(sim: Simulation):
     """
