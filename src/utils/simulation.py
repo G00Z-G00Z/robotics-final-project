@@ -48,7 +48,7 @@ class Joint:
     @property
     def id(self) -> str:
         """id of the joint"""
-        return self.id
+        return self._id
 
     def set_angle(self, angle_deg: float):
         self._current_angle = angle_deg
