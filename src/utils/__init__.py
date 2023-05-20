@@ -12,4 +12,6 @@ from .simulation import (
     NO_ROTATION_MATRIX,
     NO_TRANSLATION_VEC,
     start_simulation,
+    get_transformation_matrix_between_joins,
+    get_transformation_matrices_for_joint_list,
 )

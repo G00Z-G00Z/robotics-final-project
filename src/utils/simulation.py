@@ -1,6 +1,7 @@
 from typing import Any
 import numpy as np
 from .matrices import *
+from .utils import window_iter
 import contextlib
 from time import sleep
 
@@ -53,3 +54,34 @@ def get_homogenous_mat_for_joint(theta: float, alpha: float, a: float, d: float)
 
     H = rotation_z @ translation_z @ translation_x @ rotation_x
     return H
+
+
+def get_transformation_matrix_between_joins(
+    sim: Simulation, id_prev: str, id_next: str
+):
+    """
+    Returns the transformation matrix between a pair of joints
+    """
+    transformation_matrix_flat = sim.getObjectMatrix(id_next, id_prev)
+    transformation_matrix_incomplete = np.round(
+        np.array(transformation_matrix_flat).reshape([3, 4]), 5
+    )
+    transformation_matrix_complete = np.block(
+        [[transformation_matrix_incomplete], [np.array([0, 0, 0, 1])]]
+    )
+    return transformation_matrix_complete
+
+
+def get_transformation_matrices_for_joint_list(
+    sim: Simulation, join_id_list: list[str]
+) -> list[np.ndarray]:
+    """
+    Travels the joints id and returns the transformation matrices between them
+    """
+
+    h_mats = [
+        get_transformation_matrix_between_joins(sim, prev_id, next_id)
+        for prev_id, next_id in window_iter(join_id_list, 2)
+    ]
+
+    return h_mats
