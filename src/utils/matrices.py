@@ -1,6 +1,6 @@
 import numpy as np
 from collections.abc import Callable
-from functools import wraps
+from functools import wraps, reduce
 
 
 def deg_args(f: Callable):
