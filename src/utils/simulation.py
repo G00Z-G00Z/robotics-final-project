@@ -4,7 +4,7 @@ from .matrices import *
 from .utils import window_iter
 import contextlib
 from time import sleep
-
+from dataclasses import dataclass
 
 NO_ROTATION_MATRIX, _ = rotation_3d_deg(0, 0, 0)
 NO_TRANSLATION_VEC = np.array([0, 0, 0])
@@ -13,6 +13,43 @@ NO_TRANSLATION_VEC = np.array([0, 0, 0])
 Simulation = Any
 
 
+@dataclass
+class Joint:
+    _id: str
+    _sim: Simulation
+
+    _current_angle: float = 0
+
+    def __init__(self, sim: Simulation, id: str):
+        self._sim = sim
+        self._id = id
+
+    @property
+    def position(self) -> np.ndarray:
+        """The position property."""
+        position = self._sim.getObjectPosition(self._id, self._sim.handle_world)
+        return np.round(np.array(position), 4)
+
+    @property
+    def angle(self) -> float:
+        """Gets the current angle"""
+        return self._current_angle
+
+    @angle.setter
+    def angle(self, deg: float):
+        self.set_angle(deg)
+
+    @property
+    def id(self) -> str:
+        """id of the joint"""
+        return self.id
+
+    def set_angle(self, angle_deg: float):
+        self._current_angle = angle_deg
+        self._sim.setJointTargetPosition(self.id, np.deg2rad(angle_deg))
+
+    def reset(self):
+        self.set_angle(0)
 @contextlib.contextmanager
 def start_simulation(sim: Simulation):
     """
