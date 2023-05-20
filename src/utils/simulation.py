@@ -56,6 +56,47 @@ class Joint:
 
     def reset(self):
         self.set_angle(0)
+
+
+class Link:
+    """
+    Represents a link in the arm
+    """
+
+    _prev_joint: Joint
+    _next_joint: Joint
+    _sim: Simulation
+
+    _initial_homogeneous_matrix: np.ndarray
+
+    def __init__(self, sim: Simulation, prev_joint: Joint, next_joint: Joint):
+        self._prev_joint = prev_joint
+        self._next_joint = next_joint
+        self._sim = sim
+        self._prev_joint.reset()
+        self._next_joint.reset()
+        self._initial_homogeneous_matrix = self.get_transformation_matrix()
+
+    @property
+    def prev_joint(self) -> Joint:
+        return self._prev_joint
+
+    @property
+    def next_joint(self) -> Joint:
+        return self._next_joint
+
+    @property
+    def initial_homogeneous_matrix(self) -> np.ndarray:
+        return self._initial_homogeneous_matrix
+
+    def get_transformation_matrix(self) -> np.ndarray:
+        """
+        Returns the transformation matrix between the previous joint and the next joint
+        """
+        return get_transformation_matrix_between_joins(
+            self._sim, self.prev_joint.id, self.next_joint.id
+        )
+
 @contextlib.contextmanager
 def start_simulation(sim: Simulation):
     """
