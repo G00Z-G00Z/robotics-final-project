@@ -9,6 +9,7 @@ Make a simulation of a UR5 in CoppeliaSim, using python and ZeroMQ Remote API.
 
 ![Robot UR5](./img/ur5.png)
 
+> No se hara con denavit
 - [ ] Investigate [Denavit-Hartenberg parameters](https://www.mdpi.com/2218-6581/11/6/137) of the UR5 
 - [ ] Install dependecies: `pyzmq, cbor, numpy, argparse, time, textwrap`
 - [ ] Make a `venv`
