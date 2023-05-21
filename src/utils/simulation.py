@@ -8,6 +8,7 @@ from .matrices import (
     rotation_3d_deg,
     add_translation_to_rotation_3d,
     mul_homogenous_matrixes,
+    get_homogenous_point_3d,
     mul_homogenous_matrixes,
 )
 
@@ -20,10 +21,6 @@ Simulation = Any
 
 @dataclass
 class Joint:
-    """
-    Represents a joint in the arm
-    """
-
     _id: str
     _sim: Simulation
 
@@ -41,7 +38,7 @@ class Joint:
 
     @property
     def angle(self) -> float:
-        """Gets the current angle in deg"""
+        """Gets the current angle"""
         return self._current_angle
 
     @angle.setter
@@ -54,12 +51,10 @@ class Joint:
         return self._id
 
     def set_angle(self, angle_deg: float):
-        """Moves the joint to a specific angle in deg"""
         self._current_angle = angle_deg
         self._sim.setJointTargetPosition(self.id, np.deg2rad(angle_deg))
 
     def reset(self):
-        """Resets the joint to 0 deg"""
         self.set_angle(0)
 
 
@@ -110,9 +105,6 @@ class RobotArm:
         self._links = links
 
     def reset_arm(self):
-        """
-        Reseets the arm to have all joints be 0 deg
-        """
         for link in self._links:
             link.prev_joint.reset()
             link.next_joint.reset()
@@ -137,9 +129,11 @@ class RobotArm:
         H_mats: list[np.ndarray] = []
 
         for link, angle in zip(self._links, angles_deg):
-            rot_z_mat, _ = rotation_3d_deg(yau_z=angle)
-            rot_z_mat_h = add_translation_to_rotation_3d(rot_z_mat, NO_TRANSLATION_VEC)
-            H_mats.append(rot_z_mat_h @ link.initial_homogeneous_matrix)
+            rotation_angle_m, _ = rotation_3d_deg(yau_z=angle)
+            rotation_h_matrix = add_translation_to_rotation_3d(
+                rotation_angle_m, NO_TRANSLATION_VEC
+            )
+            H_mats.append(rotation_h_matrix @ link.initial_homogeneous_matrix)
 
         # Put a 0 instead of a one to not carry over the sum
         initial_translation = np.block([initial_pos, 0])
@@ -150,7 +144,7 @@ class RobotArm:
 
     def set_position_arm(self, angles_deg: list[float]):
         """
-        Sets the arm position to the angles provided in deg
+        Sets the arm position to the angles provided
         """
         assert len(angles_deg) == len(
             self._links
@@ -183,3 +177,54 @@ def reset_arm(sim: Simulation, list_joint_ids: list[int], angle_deg: int = 0):
     """
     for j in list_joint_ids:
         sim.setJointTargetPosition(j, np.deg2rad(angle_deg))
+
+
+def get_homogenous_mat_for_joint(theta: float, alpha: float, a: float, d: float):
+    """
+    Esto se lee como una rotacion $\theta$ en $z$, una translacion $d$ en $z$, translacion $a$ en $x$ y rotacion $\alpha$ en $x$,
+    """
+    rotation_z, _ = rotation_3d_deg(yau_z=theta)
+    rotation_z = add_translation_to_rotation_3d(rotation_z, NO_TRANSLATION_VEC)
+    rotation_x, _ = rotation_3d_deg(phi_x=alpha)
+    rotation_x = add_translation_to_rotation_3d(rotation_x, NO_TRANSLATION_VEC)
+
+    translation_x = add_translation_to_rotation_3d(
+        NO_ROTATION_MATRIX, np.array([a, 0, 0])
+    )
+    translation_z = add_translation_to_rotation_3d(
+        NO_ROTATION_MATRIX, np.array([0, 0, d])
+    )
+
+    H = rotation_z @ translation_z @ translation_x @ rotation_x
+    return H
+
+
+def get_transformation_matrix_between_joins(
+    sim: Simulation, id_prev: str, id_next: str
+):
+    """
+    Returns the transformation matrix between a pair of joints
+    """
+    transformation_matrix_flat = sim.getObjectMatrix(id_next, id_prev)
+    transformation_matrix_incomplete = np.round(
+        np.array(transformation_matrix_flat).reshape([3, 4]), 5
+    )
+    transformation_matrix_complete = np.block(
+        [[transformation_matrix_incomplete], [np.array([0, 0, 0, 1])]]
+    )
+    return transformation_matrix_complete
+
+
+def get_transformation_matrices_for_joint_list(
+    sim: Simulation, join_id_list: list[str]
+) -> list[np.ndarray]:
+    """
+    Travels the joints id and returns the transformation matrices between them
+    """
+
+    h_mats = [
+        get_transformation_matrix_between_joins(sim, prev_id, next_id)
+        for prev_id, next_id in window_iter(join_id_list, 2)
+    ]
+
+    return h_mats
