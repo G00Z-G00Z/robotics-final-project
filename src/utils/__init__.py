@@ -8,12 +8,9 @@ from .matrices import (
 from .simulation import (
     Simulation,
     reset_arm,
-    get_homogenous_mat_for_joint,
     NO_ROTATION_MATRIX,
     NO_TRANSLATION_VEC,
     start_simulation,
-    get_transformation_matrix_between_joins,
-    get_transformation_matrices_for_joint_list,
     Joint,
     Link,
     RobotArm,
