@@ -8,7 +8,6 @@ from .matrices import (
     rotation_3d_deg,
     add_translation_to_rotation_3d,
     mul_homogenous_matrixes,
-    get_homogenous_point_3d,
     mul_homogenous_matrixes,
 )
 
