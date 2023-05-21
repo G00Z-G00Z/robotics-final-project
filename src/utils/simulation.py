@@ -137,11 +137,12 @@ class RobotArm:
             )
             H_mats.append(rotation_h_matrix @ link.initial_homogeneous_matrix)
 
-        predicted_position = np.block([0, 0, 0, 1])
-        initial_translation = np.block([initial_pos, 1])
+        # Put a 0 instead of a one to not carry over the sum
+        initial_translation = np.block([initial_pos, 0])
+
         H_total = mul_homogenous_matrixes(H_mats)
 
-        return (H_total @ predicted_position) + initial_translation
+        return (H_total @ np.array([0, 0, 0, 1])) + initial_translation
 
     def set_position_arm(self, angles_deg: list[float]):
         """
