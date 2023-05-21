@@ -126,11 +126,9 @@ class RobotArm:
             self._links
         ), f"You must provide one angle per link. There are {len(self._links)} links and you provided {len(angles_deg)} angles"
 
-        angles: list[float] = [np.deg2rad(angle) for angle in angles_deg]
-
         H_mats: list[np.ndarray] = []
 
-        for link, angle in zip(self._links, angles):
+        for link, angle in zip(self._links, angles_deg):
             rotation_angle_m, _ = rotation_3d_deg(yau_z=angle)
             rotation_h_matrix = add_translation_to_rotation_3d(
                 rotation_angle_m, NO_TRANSLATION_VEC
@@ -151,10 +149,9 @@ class RobotArm:
         assert len(angles_deg) == len(
             self._links
         ), f"You must provide one angle per link. There are {len(self._links)} links and you provided {len( angles_deg )} angles"
-        angles: list[float] = [np.deg2rad(angle) for angle in angles_deg]
 
-        for link, angle in zip(self._links, angles):
-            link.prev_joint.angle = angle
+        for link, angle in zip(self._links, angles_deg):
+            link.prev_joint.set_angle(angle)
 
         return self._links[-1].next_joint.position
 
