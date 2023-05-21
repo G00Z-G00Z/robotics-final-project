@@ -110,12 +110,18 @@ class RobotArm:
             link.next_joint.reset()
 
     def get_predicted_position(
-        self, angles_deg: list[float], initial_pos: np.ndarray = np.array([0, 0, 0])
+        self, angles_deg: list[float], initial_pos_arg: np.ndarray | None = None
     ) -> np.ndarray:
         """
         Returns the predicted position of the end effector
         It applies a z rotation on each joint, and then applies the initial transformation matrix to each link
         """
+        initial_pos: np.ndarray = (
+            np.array([0, 0, 0]) if initial_pos_arg is None else initial_pos_arg
+        )
+
+        assert len(initial_pos) == 3, "Initial position must be a 3d vector"
+
         assert len(angles_deg) == len(
             self._links
         ), "You must provide one angle per link"
@@ -130,10 +136,11 @@ class RobotArm:
             )
             H_mats.append(rotation_h_matrix @ link.initial_homogeneous_matrix)
 
-        predicted_position = np.block([initial_pos, 1])
+        predicted_position = np.block([0, 0, 0, 1])
+        initial_translation = np.block([initial_pos, 1])
         H_total = mul_homogenous_matrixes(H_mats)
 
-        return H_total @ predicted_position
+        return (H_total @ predicted_position) + initial_translation
 
     def set_position_arm(self, angles_deg: list[float]):
         """
