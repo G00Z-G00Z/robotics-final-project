@@ -124,7 +124,8 @@ class RobotArm:
 
         assert len(angles_deg) == len(
             self._links
-        ), "You must provide one angle per link"
+        ), f"You must provide one angle per link. There are {len(self._links)} links and you provided {len(angles_deg)} angles"
+
         angles: list[float] = [np.deg2rad(angle) for angle in angles_deg]
 
         H_mats: list[np.ndarray] = []
@@ -148,7 +149,7 @@ class RobotArm:
         """
         assert len(angles_deg) == len(
             self._links
-        ), "You must provide one angle per link"
+        ), f"You must provide one angle per link. There are {len(self._links)} links and you provided {len( angles_deg )} angles"
         angles: list[float] = [np.deg2rad(angle) for angle in angles_deg]
 
         for link, angle in zip(self._links, angles):
