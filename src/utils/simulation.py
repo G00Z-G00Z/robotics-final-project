@@ -57,6 +57,7 @@ class Joint:
         self.set_angle(0)
 
 
+@dataclass
 class Link:
     """
     Represents a link in the arm
@@ -97,6 +98,7 @@ class Link:
         )
 
 
+@dataclass
 class RobotArm:
     _links: list[Link]
 
