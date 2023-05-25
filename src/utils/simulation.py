@@ -20,6 +20,11 @@ Simulation = Any
 
 @dataclass
 class Joint:
+    """
+    Represents a Joint in the arm
+    Stores the id of the joint and the simulation
+    """
+
     _id: str
     _sim: Simulation
 
@@ -60,7 +65,9 @@ class Joint:
 @dataclass
 class Link:
     """
-    Represents a link in the arm
+    Represents a link in the arm between two joints
+    Calculates the initial transformation matrix between the two joints
+    when joints are at 0 deg
     """
 
     _prev_joint: Joint
@@ -100,6 +107,12 @@ class Link:
 
 @dataclass
 class RobotArm:
+    """
+    Represents a robot arm
+    Takes a list of links and can predict the end position and control
+    the links in the arm
+    """
+
     _links: list[Link]
 
     def __init__(self, links: list[Link]):
@@ -130,10 +143,12 @@ class RobotArm:
         H_mats: list[np.ndarray] = []
 
         for link, angle in zip(self._links, angles_deg):
+            # Creates a rotation in the z axis
             rotation_angle_m, _ = rotation_3d_deg(yau_z=angle)
             rotation_h_matrix = add_translation_to_rotation_3d(
                 rotation_angle_m, NO_TRANSLATION_VEC
             )
+            # Adds the new rotation and the initial H matrix
             H_mats.append(rotation_h_matrix @ link.initial_homogeneous_matrix)
 
         # Put a 0 instead of a one to not carry over the sum

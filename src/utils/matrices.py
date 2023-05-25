@@ -51,10 +51,17 @@ def rotation_3d_deg(yau_z: float = 0, theta_y: float = 0, phi_x: float = 0):
 
 
 def add_translation_to_rotation_3d(rotation_3d: np.ndarray, p: np.ndarray):
+    """
+    Puts a rotation 3x3 matrix with a translation 3 x 1 matrix into a 4 x 4
+    homogeneous matrix
+    """
     return np.block([[rotation_3d, np.reshape(p, (3, 1))], [np.zeros((1, 3)), 1]])
 
 
 def get_homogenous_point_3d(p: np.ndarray):
+    """
+    Puts a 3 x 1 point into a 4 x 1 homogeneous point
+    """
     return np.block([p, 1])
 
 
